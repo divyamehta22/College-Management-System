@@ -37,9 +37,8 @@ export function AuthProvider({ children }) {
         localStorage.setItem("user", JSON.stringify(userData));
   
         const redirectTarget = {
-          super_admin: "/college",       // Or whatever page super_admin should land on
-          college: "/college",
-          department: "/department",
+          super_admin: "/college",      
+          admin: "/department", 
           staff: "/staff",
           student: "/student",
           parent: "/parent",
