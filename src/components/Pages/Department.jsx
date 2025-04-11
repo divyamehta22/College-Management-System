@@ -1,12 +1,23 @@
 import React, { useState } from "react";
+import { Menu, LayoutDashboard, Users, BookOpen, Lock, LogOut } from "lucide-react";
+
+import Sidebar from "../Common/Sidebar";
 import AdminDashboard from "../DepartmentPages/AdminDashboard";
 import AdminManageStaff from "../DepartmentPages/AdminManageStaff";
-import Sidebar from "../Sidebar";
-import { Menu } from "lucide-react"; // hamburger icon
+import AdminManageStudents from "../DepartmentPages/AdminManageStudents";
+import ResetPassword from "../Common/ResetPassword";
 
 const Department = () => {
   const [activePage, setActivePage] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false); // NEW
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const sidebarOptions = [
+    { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
+    { key: "manageStaff", label: "Manage Staff", icon: <Users size={18} /> },
+    { key: "manageStudent", label: "Manage Students", icon: <BookOpen size={18} /> },
+    { key: "resetPassword", label: "Reset Password", icon: <Lock size={18} /> },
+    { key: "logout", label: "Logout", icon: <LogOut size={18} /> },
+  ];
 
   const renderContent = () => {
     switch (activePage) {
@@ -14,38 +25,69 @@ const Department = () => {
         return <AdminDashboard />;
       case "manageStaff":
         return <AdminManageStaff />;
+      case "manageStudent":
+        return <AdminManageStudents />;
+      case "resetPassword":
+        return <ResetPassword />;
+      case "logout":
+        // Add logout logic here if needed
+        return <div className="p-4 text-red-600 font-semibold">You have been logged out.</div>;
       default:
         return <AdminDashboard />;
     }
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar for medium+ screens */}
-      <div className="hidden md:block">
-        <Sidebar setActivePage={setActivePage} />
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar for desktop */}
+      <div className="hidden md:block w-64">
+        <Sidebar
+          title="Department"
+          options={sidebarOptions}
+          activePage={activePage}
+          setActivePage={setActivePage}
+        />
       </div>
 
-      {/* Mobile sidebar */}
-      {sidebarOpen && (
-        <div className="fixed z-50 inset-0 bg-black bg-opacity-50 md:hidden" onClick={() => setSidebarOpen(false)}>
-          <div className="absolute left-0 top-0 w-64 bg-white h-full shadow-lg" onClick={(e) => e.stopPropagation()}>
-            <Sidebar setActivePage={(page) => {
+      {/* Sidebar for mobile */}
+      <div
+        className={`fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity md:hidden ${
+          sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={() => setSidebarOpen(false)}
+      >
+        <div
+          className={`absolute left-0 top-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Sidebar
+            title="Department"
+            options={sidebarOptions}
+            activePage={activePage}
+            setActivePage={(page) => {
               setActivePage(page);
               setSidebarOpen(false);
-            }} />
-          </div>
+            }}
+          />
         </div>
-      )}
+      </div>
 
       {/* Main content */}
-      <div className="flex-1 p-4 bg-gray-100 w-full">
-        {/* Menu button */}
-        <button className="md:hidden mb-4" onClick={() => setSidebarOpen(true)}>
-          <Menu className="w-6 h-6" />
-        </button>
+      <div className="flex-1 flex flex-col">
+        {/* Top mobile bar */}
+        <div className="md:hidden p-4 bg-white shadow flex items-center">
+          <button onClick={() => setSidebarOpen(true)} className="text-gray-700">
+            <Menu className="w-6 h-6" />
+          </button>
+          <h2 className="ml-4 text-lg font-semibold">Department Panel</h2>
+        </div>
 
-        {renderContent()}
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-4">
+          {renderContent()}
+        </main>
       </div>
     </div>
   );
