@@ -1,20 +1,48 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ResetPassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your API call or logic here
-    setSuccessMsg("Password updated successfully!");
-    setOldPassword("");
-    setNewPassword("");
+
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/auth/change-password`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword: oldPassword,
+            newPassword: newPassword,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.status === "success") {
+        toast.success("Password updated successfully!");
+        setOldPassword("");
+        setNewPassword("");
+      } else {
+        toast.error(data.message || "Failed to update password.");
+      }
+    } catch (err) {
+      toast.error("Something went wrong.");
+    }
   };
 
   return (
@@ -29,7 +57,6 @@ const ResetPassword = () => {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Old Password */}
         <div className="relative">
           <label className="block text-gray-700 mb-1 font-medium">Old Password</label>
           <input
@@ -47,7 +74,6 @@ const ResetPassword = () => {
           </span>
         </div>
 
-        {/* New Password */}
         <div className="relative">
           <label className="block text-gray-700 mb-1 font-medium">New Password</label>
           <input
@@ -65,24 +91,16 @@ const ResetPassword = () => {
           </span>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 rounded-lg font-medium hover:scale-105 transition"
         >
           Update Password
         </button>
-
-        {successMsg && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-green-600 font-medium text-center mt-4"
-          >
-            {successMsg}
-          </motion.p>
-        )}
       </form>
+
+      {/* Toast container */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </motion.div>
   );
 };

@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { Menu, LayoutDashboard, Users, BookOpen, Lock, LogOut } from "lucide-react";
-
 import Sidebar from "../Common/Sidebar";
 import AdminDashboard from "../DepartmentPages/AdminDashboard";
 import AdminManageStaff from "../DepartmentPages/AdminManageStaff";
 import AdminManageStudents from "../DepartmentPages/AdminManageStudents";
 import ResetPassword from "../Common/ResetPassword";
+import { useAuth } from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Department = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    const confirm = window.confirm("Are you sure you want to logout?");
+    if (confirm) {
+      logout();
+      navigate("/");
+    }
+  };
 
   const sidebarOptions = [
     { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
@@ -30,8 +41,7 @@ const Department = () => {
       case "resetPassword":
         return <ResetPassword />;
       case "logout":
-        // Add logout logic here if needed
-        return <div className="p-4 text-red-600 font-semibold">You have been logged out.</div>;
+        handleLogout();  
       default:
         return <AdminDashboard />;
     }
