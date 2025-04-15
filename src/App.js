@@ -6,6 +6,7 @@ import Department from "./components/Pages/Department"
 import Staff from "./components/Pages/Staff"
 import Student from "./components/Pages/Student"
 import Parent from "./components/Pages/Parent"
+// import CollegeDashboard from "./components/CollegePages/CollegeDashboard";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="/staff" element={<Staff />} />
         <Route path="/student" element={<Student />} />
         <Route path="/parent" element={<Parent />} />
+        {/* <Route path="/college-dash" element={<CollegeDashboard />} /> */}
+        
       </Routes>
     </Router>
   </AuthProvider>

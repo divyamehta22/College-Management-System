@@ -14,6 +14,8 @@ const College = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  const username = JSON.parse(localStorage.getItem("user"))?.username;
+
   const handleLogout = () => {
     const confirm = window.confirm("Are you sure you want to logout?");
     if (confirm) {
@@ -54,6 +56,7 @@ const College = () => {
           options={sidebarOptions}
           activePage={activePage}
           setActivePage={setActivePage}
+          username={username}
         />
       </div>
 
