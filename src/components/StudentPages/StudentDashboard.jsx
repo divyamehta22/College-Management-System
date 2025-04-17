@@ -1,72 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen } from "lucide-react";
-
-const subjects = [
-  { name: "Mathematics", attendance: 88 },
-  { name: "Physics", attendance: 92 },
-  { name: "Chemistry", attendance: 85 },
-  { name: "English", attendance: 90 },
-  { name: "Computer Science", attendance: 95 },
-];
-
-const containerVariants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0 },
-};
+import { Home, Phone, IdCard, GraduationCap, Building2 } from "lucide-react";
 
 const StudentDashboard = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-6">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-3xl font-bold text-blue-700 mb-6 text-center"
-      >
-        Your Subject-wise Attendance
-      </motion.h1>
+  const [student, setStudent] = useState(null);
+  const [departmentName, setDepartmentName] = useState("");
 
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {subjects.map((subject, index) => (
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData?.student) {
+      setStudent(userData.student);
+      if (userData.student?.department_id && userData.student?.department) {
+        setDepartmentName(userData.student.department.name);
+      }
+    }
+  }, []);
+
+  if (!student) return <p className="p-6 text-gray-600">Loading student info...</p>;
+
+  const cardInfo = [
+    {
+      label: "Roll Number",
+      value: student.roll_number,
+      icon: <IdCard className="text-white w-6 h-6" />, 
+      bg: "bg-gradient-to-r from-purple-500 to-indigo-600",
+    },
+    {
+      label: "Semester",
+      value: `Semester ${student.semester}`,
+      icon: <GraduationCap className="text-white w-6 h-6" />, 
+      bg: "bg-gradient-to-r from-pink-500 to-red-500",
+    },
+    {
+      label: "Address",
+      value: student.address,
+      icon: <Home className="text-white w-6 h-6" />, 
+      bg: "bg-gradient-to-r from-yellow-500 to-orange-500",
+    },
+    {
+      label: "Phone",
+      value: student.phone,
+      icon: <Phone className="text-white w-6 h-6" />, 
+      bg: "bg-gradient-to-r from-teal-500 to-green-500",
+    },
+    {
+      label: "Department",
+      value: departmentName || "Computer Science",
+      icon: <Building2 className="text-white w-6 h-6" />,
+      bg: "bg-gradient-to-r from-blue-500 to-cyan-500",
+    },
+  ];
+
+  return (
+    <div className="p-4 sm:p-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">Student Dashboard</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        {cardInfo.map((card, index) => (
           <motion.div
             key={index}
-            variants={cardVariants}
-            className="rounded-2xl p-4 shadow-lg bg-white border-l-4 border-blue-500 hover:scale-[1.02] transition-all duration-300"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+            className={`rounded-2xl p-6 text-white shadow-lg flex items-center justify-between ${card.bg}`}
           >
-            <div className="flex items-center space-x-3 mb-2">
-              <BookOpen className="text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-700">
-                {subject.name}
-              </h2>
+            <div>
+              <h4 className="text-sm font-medium mb-1">{card.label}</h4>
+              <p className="text-xl font-bold">{card.value}</p>
             </div>
-            <p className="text-sm text-gray-600 mb-2">Attendance</p>
-            <div className="text-xl font-bold text-blue-800">
-              {subject.attendance}%
-            </div>
-            <div className="w-full bg-gray-200 h-2 mt-2 rounded">
-              <div
-                className="h-2 bg-blue-500 rounded"
-                style={{ width: `${subject.attendance}%` }}
-              ></div>
-            </div>
+            <div className="p-2 bg-white/20 rounded-full">{card.icon}</div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 };

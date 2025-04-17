@@ -6,12 +6,16 @@ import StudentDashboard from "../StudentPages/StudentDashboard";
 import StudentSchedule from "../StudentPages/StudentSchedule";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import StudentAttendance from "../StudentPages/StudentAttendance";
 
 const Student = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const username = user?.student?.name || user?.username;
 
   const handleLogout = () => {
     const confirm = window.confirm("Are you sure you want to logout?");
@@ -23,6 +27,7 @@ const Student = () => {
 
   const sidebarOptions = [
     { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
+    { key: "attendance", label: "Attendance", icon: <LayoutDashboard className="w-4 h-4" /> },
     { key: "schedule", label: "Schedule", icon: <CalendarDays  className="w-4 h-4" /> },
     { key: "resetPassword", label: "Reset Password", icon: <KeyRound className="w-4 h-4" /> },
     { key: "logout", label: "Logout", icon: <LogOut className="w-4 h-4" /> },
@@ -32,6 +37,8 @@ const Student = () => {
     switch (activePage) {
       case "dashboard":
         return <StudentDashboard />;
+      case "attendance":
+        return <StudentAttendance    />;
       case "schedule":
         return <StudentSchedule />;
       case "resetPassword":
@@ -52,6 +59,7 @@ const Student = () => {
           options={sidebarOptions}
           activePage={activePage}
           setActivePage={setActivePage}
+          username={username}
         />
       </div>
 
@@ -76,6 +84,7 @@ const Student = () => {
               setActivePage(page);
               setSidebarOpen(false);
             }}
+            username={username}
           />
         </div>
       </div>

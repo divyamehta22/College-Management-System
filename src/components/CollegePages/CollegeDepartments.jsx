@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Trash2, Plus } from "lucide-react";
 
 const CollegeDepartments = () => {
-  const [departments, setDepartments] = useState([
-    { id: 1, name: "Computer Science", teachers: 10, students: 120 },
-    { id: 2, name: "Mechanical Engineering", teachers: 8, students: 100 },
-    { id: 3, name: "Electronics & Communication", teachers: 9, students: 110 },
-  ]);
+  const [departments, setDepartments] = useState([]);
   const [newDept, setNewDept] = useState("");
 
+  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  const API = process.env.REACT_APP_API_BASE_URL;
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch(`${API}/super-admin/departments`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          setDepartments(data.data);
+        } else {
+          console.error("Failed to fetch departments:", data.message);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchDepartments();
+  }, [token]);
+
   const addDepartment = () => {
-    if (newDept.trim()) {
-      setDepartments([
-        ...departments,
-        {
-          id: Date.now(),
-          name: newDept.trim(),
-          teachers: Math.floor(Math.random() * 10) + 5,
-          students: Math.floor(Math.random() * 100) + 50,
-        },
-      ]);
-      setNewDept("");
-    }
+    if (!newDept.trim()) return;
+    setDepartments([
+      ...departments,
+      {
+        id: Date.now(),
+        name: newDept.trim(),
+        teachers: Math.floor(Math.random() * 10) + 5,
+        students: Math.floor(Math.random() * 100) + 50,
+      },
+    ]);
+    setNewDept("");
   };
 
   const deleteDepartment = (id) => {
@@ -33,7 +51,7 @@ const CollegeDepartments = () => {
     <div className="p-6">
       <h2 className="text-2xl font-bold text-blue-800 mb-6">Manage Departments</h2>
 
-      {/* Input to add department */}
+      {/* Add Department Input */}
       <div className="flex items-center space-x-2 mb-6">
         <input
           value={newDept}
@@ -49,7 +67,7 @@ const CollegeDepartments = () => {
         </button>
       </div>
 
-      {/* Departments Grid */}
+      {/* Departments List */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {departments.map((dept) => (
           <motion.div
@@ -68,8 +86,14 @@ const CollegeDepartments = () => {
               </button>
             </div>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><span className="font-medium text-blue-700">Teachers:</span> {dept.teachers}</p>
-              <p><span className="font-medium text-green-700">Students:</span> {dept.students}</p>
+              <p>
+                <span className="font-medium text-blue-700">Teachers:</span>{" "}
+                {dept.teachers || "—"}
+              </p>
+              <p>
+                <span className="font-medium text-green-700">Students:</span>{" "}
+                {dept.students || "—"}
+              </p>
             </div>
           </motion.div>
         ))}

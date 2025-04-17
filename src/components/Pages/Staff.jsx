@@ -16,6 +16,9 @@ const Staff = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const username = user?.staff?.name || user?.username;
+
   const handleLogout = () => {
     const confirm = window.confirm("Are you sure you want to logout?");
     if (confirm) {
@@ -64,6 +67,7 @@ const Staff = () => {
           options={sidebarOptions}
           activePage={activePage}
           setActivePage={setActivePage}
+          username={username}
         />
       </div>
 
@@ -88,6 +92,7 @@ const Staff = () => {
               setActivePage(page);
               setSidebarOpen(false);
             }}
+            username={username}
           />
         </div>
       </div>

@@ -81,6 +81,7 @@ const College = () => {
               setActivePage(page);
               setSidebarOpen(false);
             }}
+            username={username}
           />
         </div>
       </div>

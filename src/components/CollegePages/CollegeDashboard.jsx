@@ -15,6 +15,7 @@ const CollegeDashboard = () => {
   // console.log(token)
 
   useEffect(() => {
+
     const fetchStats = async () => {
       try {
         const res = await fetch(
@@ -23,17 +24,10 @@ const CollegeDashboard = () => {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
+              "ngrok-skip-browser-warning": "true",
             },
           }
-        );
-  
-        // console.log("API being called:", `${process.env.REACT_APP_API_BASE_URL}/super-admin/dashboard`);
-        // const contentType = res.headers.get("content-type");
-        // if (!contentType || !contentType.includes("application/json")) {
-        //   const text = await res.text(); // this will log the HTML
-        //   console.error("❌ Response is not JSON. Here's what came back:\n", text);
-        //   return;
-        // }
+        );        
   
         const data = await res.json();
         console.log(data)
